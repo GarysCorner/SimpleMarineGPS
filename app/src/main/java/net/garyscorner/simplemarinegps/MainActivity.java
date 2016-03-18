@@ -26,6 +26,7 @@ import java.security.Permission;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     //declare vars
     private LocationManager locationmanager;
     private LocationListener locationlistener;
-    private long minUpdateTime = 1000 * 60;  //min between location updates
+    private long minUpdateTime = 1000 * 60;  //min between location updates milliseconds
     private long minDistance = 10;  //minimum distance between updates in meters
     private final static int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  //call super first
-        Log.w("MainActivity", "Resuming main activity");
+        Log.w("SimpleMarineGPS", "Resuming main activity");
 
         //if we have permissions go ahead and start GPS otherwise request
 
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onPause();
 
-        Log.w("MainActivity", "Main activity paused");
+        Log.w("SimpleMarineGPS", "Main activity paused");
 
         stopLocationServices();
 
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         locationlistener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("LocationManager","Location updated" + location.toString());
+                Log.d("SimpleMarineGPS", "Location updated" + location.toString());
 
                 text_lat.setText(doubleToLat(location.getLatitude()));
                 text_long.setText(doubleToLong(location.getLongitude()));
@@ -174,17 +175,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                Log.d("LocationManager","LocationManager status change");
+                Log.d("SimpleMarineGPS", "LocationManager status change");
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-                Log.d("LocationManager","LocationManager enabled");
+                Log.d("SimpleMarineGPS", "LocationManager enabled");
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-                Log.d("LocationManager","LocationManager disabled");
+                Log.d("SimpleMarineGPS", "LocationManager disabled");
             }
         };
 
@@ -204,19 +205,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String longToTime(long timestamp) {
-        Date date = new Date(timestamp);
-        DateFormat formatter = new SimpleDateFormat("HH:mm");
-        return formatter.format(date);
+        return "Still working on it";
 
     }
 
     private boolean stopLocationServices() { //stop locaiton services
 
-        Log.d("LocationManager", "Attempting to remove locaiton updates");
+        Log.d("SimpleMarineGPS", "Attempting to remove locaiton updates");
         try{
             locationmanager.removeUpdates(locationlistener);
         } catch (SecurityException e) {
-            Log.w("LocationManager", "Removing location update failed!?!");
+            Log.w("SimpleMarineGPS", "Removing location update failed!?!");
             return false;
         }
 
@@ -227,13 +226,13 @@ public class MainActivity extends AppCompatActivity {
 
     //star location services
     private void startLocationManager() {
-        Log.d("LocationManager", "Attempting to start location manager");
+        Log.d("SimpleMarineGPS", "Attempting to start location manager");
 
         try{
             locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, minDistance, locationlistener);
             locationOn = true;
         } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle
-            Log.d("LocationManager", "No permissions to start locationmanager unexpectidly");
+            Log.d("SimpleMarineGPS", "No permissions to start locationmanager unexpectidly");
             locationOn = false;
         }
 

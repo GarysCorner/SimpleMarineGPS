@@ -3,9 +3,11 @@ package net.garyscorner.simplemarinegps;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,29 +29,43 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.floor;
 
 
 public class MainActivity extends AppCompatActivity {
+
 
     //declare vars
     private LocationManager locationmanager;
     private LocationListener locationlistener;
     private long minUpdateTime = 1000 * 60;  //min between location updates milliseconds
     private long minDistance = 10;  //minimum distance between updates in meters
-    private final static int requestGPScode = 1;  //return code for GPS permissions gran/deny
+    private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
-    private boolean locationOn =false;
+    long lastLocationTime = 0;
+
+
+    private final long updateLastGPSperiod = 5 * 1000;
+    Timer timer;
+    TimerTask timertask;
+    private Runnable updateLastGPSRunable;
+
+
 
 
     //widgets
-    TextView text_lat, text_long, text_acc, text_last;
+    TextView text_lat, text_long, text_acc, text_last, text_status;
 
     //code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("MainActivity", "Creating main activity!");
+        Log.d("SimpleMarineGPS", "Creating main activity!");
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,14 +76,17 @@ public class MainActivity extends AppCompatActivity {
         text_long = (TextView) findViewById(R.id.text_long);
         text_acc = (TextView) findViewById(R.id.text_acc);
         text_last = (TextView) findViewById(R.id.text_last);
+        text_status = (TextView) findViewById(R.id.text_status);
+
+        //set inital text_status color
+        setTextViewBad(text_status);
 
         //setup location manager and listener
         locationsetup();
 
-        //request permissions or start manager depending
-        if(requestLocationPermissions()) {
-            startLocationManager();
-        }
+        //request permissions or starting will be handled onStart
+        requestLocationPermissions();
+
 
 
     }
@@ -97,23 +116,57 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();  //call super first
-        Log.w("SimpleMarineGPS", "Resuming main activity");
+    public void onStart() {
+        super.onStart();  //call super first
+        Log.d("SimpleMarineGPS", "Starting main activity");
 
-        //if we have permissions go ahead and start GPS otherwise request
-
+        //if we have permissions go ahead and start GPS
         if(checkLocationPermission()) {
             startLocationManager();
         }
 
+
+        //setup runable object for timertask so we dont create it every time
+        updateLastGPSRunable = new Runnable() {
+            @Override
+            public void run() {
+                long timeDiff = (System.currentTimeMillis() - lastLocationTime) / 1000;
+
+                if(timeDiff < 60) {
+                    text_last.setText(Long.toString(timeDiff) + " secs");
+                } else {
+                    text_last.setText(Long.toString(timeDiff/60) + " mins");
+                }
+            }
+        };
+
+        //start the timer to update last time
+        timer = new Timer();
+
+        timertask = new TimerTask() {
+            @Override
+            public void run() {
+                updateLastGPS();
+            }
+        };
+
+        timer.schedule(timertask, 0, updateLastGPSperiod);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("SimpleMarineGPS", "Location manager paused");
     }
 
     @Override
     public void onStop() {
-        super.onPause();
+        super.onStop();
 
-        Log.w("SimpleMarineGPS", "Main activity paused");
+        Log.d("SimpleMarineGPS", "Main activity stopped");
+
+        timer.cancel();
 
         stopLocationServices();
 
@@ -170,7 +223,9 @@ public class MainActivity extends AppCompatActivity {
                 text_lat.setText(doubleToLat(location.getLatitude()));
                 text_long.setText(doubleToLong(location.getLongitude()));
                 text_acc.setText(doubleToAcc(location.getAccuracy()));
-                text_last.setText(longToTime(location.getTime()));
+
+                lastLocationTime = location.getTime();
+
             }
 
             @Override
@@ -181,11 +236,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProviderEnabled(String provider) {
                 Log.d("SimpleMarineGPS", "LocationManager enabled");
+                text_status.setText("enabled");
+                setTextViewGood(text_status);
             }
 
             @Override
             public void onProviderDisabled(String provider) {
                 Log.d("SimpleMarineGPS", "LocationManager disabled");
+                text_status.setText("disabled");
+                setTextViewBad(text_status);
             }
         };
 
@@ -193,15 +252,41 @@ public class MainActivity extends AppCompatActivity {
 
     private String doubleToLat(double lat) {
 
-        return Double.toString(lat);
+        double unsignedLat = lat;
+        int degrees = (int)floor(unsignedLat);
+        double minutes = ( unsignedLat - degrees ) * 60;
+
+        char northSouth;
+
+        if(lat < 0) {
+            northSouth = 'S';
+        } else {
+            northSouth = 'N';
+        }
+
+        return "" + degrees + "\u00B0 " + (Math.round(minutes * 100.0) / 100.0) + "' " + northSouth;
+
     }
 
     private String doubleToLong(double longitude) {
-        return Double.toString(longitude);
+
+        double unsignedLong = abs(longitude);
+        int degrees = (int)floor(unsignedLong);
+        double minutes = (unsignedLong - degrees) * 60;
+
+        char eastWest;
+        if(longitude < 0) {
+            eastWest = 'W';
+        } else {
+            eastWest = 'E';
+        }
+
+        return "" + degrees + "\u00B0 " + (Math.round(minutes * 100.0) / 100.0) + "' " + eastWest;
+
     }
 
     private String doubleToAcc(double acc) {
-        return Double.toString(acc);
+        return Double.toString(acc)+"m";
     }
 
     private String longToTime(long timestamp) {
@@ -219,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        locationOn = false;
+
 
         return true;
     }
@@ -230,12 +315,42 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, minDistance, locationlistener);
-            locationOn = true;
+
         } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle
             Log.d("SimpleMarineGPS", "No permissions to start locationmanager unexpectidly");
-            locationOn = false;
+
+        }
+
+        if(locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            setTextViewGood(text_status);
+            text_status.setText("enabled");
+        } else {
+            setTextViewBad(text_status);
+            text_status.setText("disabled");
         }
 
     }
+
+    private void setTextViewGood(TextView textview) {
+        textview.setBackgroundColor(Color.GREEN);
+    }
+
+    private void setTextViewWarn(TextView textview) {
+        textview.setBackgroundColor(Color.YELLOW);
+    }
+
+    private void setTextViewBad(TextView textview) {
+        textview.setBackgroundColor(Color.RED);
+    }
+
+    private void updateLastGPS() {
+
+        if( lastLocationTime > 0 ) { //only perform if we have received a location
+
+            runOnUiThread(updateLastGPSRunable);
+
+        }
+    }
+
 }
 

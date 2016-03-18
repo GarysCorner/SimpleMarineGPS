@@ -64,4 +64,5 @@
     <string name="text_longlabel">Longitutde:  </string>
     <string name="text_acc_label">Accuracy:  </string>
     <string name="text_lastlabel">Last Update:</string>
+    <string name="text_statuslabel">GPS Status:</string>
 </resources>

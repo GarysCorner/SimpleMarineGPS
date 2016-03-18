@@ -18,7 +18,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.Manifest;
+import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.security.Permission;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,30 +33,39 @@ public class MainActivity extends AppCompatActivity {
     //declare vars
     private LocationManager locationmanager;
     private LocationListener locationlistener;
-    private long minUpdateTime = 0;  //min between location updates
-    private long maxUpdateTime = 20;  //maximum time between location updates
-    private final static int requestGPScode = 1;
+    private long minUpdateTime = 1000 * 60;  //min between location updates
+    private long minDistance = 10;  //minimum distance between updates in meters
+    private final static int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
+    private boolean locationOn =false;
+
+
+    //widgets
+    TextView text_lat, text_long, text_acc, text_last;
 
     //code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.w("MainActivity", "Creating main activity!");
+        Log.d("MainActivity", "Creating main activity!");
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //set textview widget variables
+        text_lat = (TextView) findViewById(R.id.text_lat);
+        text_long = (TextView) findViewById(R.id.text_long);
+        text_acc = (TextView) findViewById(R.id.text_acc);
+        text_last = (TextView) findViewById(R.id.text_last);
+
         //setup location manager and listener
         locationsetup();
 
         //request permissions or start manager depending
-        if(checkLocationPermission()) {
+        if(requestLocationPermissions()) {
             startLocationManager();
-        } else {
-            requestLocationPermissions();
         }
 
 
@@ -85,14 +101,25 @@ public class MainActivity extends AppCompatActivity {
         Log.w("MainActivity", "Resuming main activity");
 
         //if we have permissions go ahead and start GPS otherwise request
+
         if(checkLocationPermission()) {
             startLocationManager();
         }
 
     }
 
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    @Override
+    public void onStop() {
+        super.onPause();
+
+        Log.w("MainActivity", "Main activity paused");
+
+        stopLocationServices();
+
+
+    }
+
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
         switch (requestCode) {
 
             case requestGPScode: {
@@ -112,22 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     //check for location manager permissions
-    public boolean checkLocationPermission()
-    {
+    public boolean checkLocationPermission() {
         return(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION));
     }
 
-    //start location manager
-    private void startLocationManager() {
-        Log.w("LocationManager", "Attempting to start location manager");
-
-        try{
-            locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, maxUpdateTime, locationlistener);
-        } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle
-            Log.d("LocationManager", "No permissions to start locationmanager unexpectidly");
-        }
-
-    }
 
     //request location permission if we dont have it
     private boolean requestLocationPermissions() {
@@ -149,27 +164,79 @@ public class MainActivity extends AppCompatActivity {
         locationlistener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.w("LocationManager","Location updated" + location.toString());
+                Log.d("LocationManager","Location updated" + location.toString());
+
+                text_lat.setText(doubleToLat(location.getLatitude()));
+                text_long.setText(doubleToLong(location.getLongitude()));
+                text_acc.setText(doubleToAcc(location.getAccuracy()));
+                text_last.setText(longToTime(location.getTime()));
             }
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                Log.w("LocationManager","LocationManager status change");
+                Log.d("LocationManager","LocationManager status change");
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-                Log.w("LocationManager","LocationManager enabled");
+                Log.d("LocationManager","LocationManager enabled");
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-                Log.w("LocationManager","LocationManager disabled");
+                Log.d("LocationManager","LocationManager disabled");
             }
         };
 
     }
 
+    private String doubleToLat(double lat) {
 
+        return Double.toString(lat);
+    }
 
+    private String doubleToLong(double longitude) {
+        return Double.toString(longitude);
+    }
+
+    private String doubleToAcc(double acc) {
+        return Double.toString(acc);
+    }
+
+    private String longToTime(long timestamp) {
+        Date date = new Date(timestamp);
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        return formatter.format(date);
+
+    }
+
+    private boolean stopLocationServices() { //stop locaiton services
+
+        Log.d("LocationManager", "Attempting to remove locaiton updates");
+        try{
+            locationmanager.removeUpdates(locationlistener);
+        } catch (SecurityException e) {
+            Log.w("LocationManager", "Removing location update failed!?!");
+            return false;
+        }
+
+        locationOn = false;
+
+        return true;
+    }
+
+    //star location services
+    private void startLocationManager() {
+        Log.d("LocationManager", "Attempting to start location manager");
+
+        try{
+            locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, minDistance, locationlistener);
+            locationOn = true;
+        } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle
+            Log.d("LocationManager", "No permissions to start locationmanager unexpectidly");
+            locationOn = false;
+        }
+
+    }
 }
+

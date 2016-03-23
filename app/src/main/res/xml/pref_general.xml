@@ -1,44 +1,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- original preferences
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
-
-    --><!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code.
     <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
-        android:inputType="textCapWords"
-        android:key="example_text"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/pref_title_display_name" />
-
-    --><!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code.
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_example_list_titles"
-        android:entryValues="@array/pref_example_list_values"
-        android:key="example_list"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_add_friends_to_messages" />
-
-        Above here is the default for pref_general.xml from android studio -->
-
-        <EditTextPreference
-            android:defaultValue="@string/pref_header_general_minUpdateTime_default"
-            android:inputType="number"
-            android:key="minUpdateTime"
-            android:title="@string/pref_header_general_minUpdateTime_title"
-            android:summary="@string/pref_header_general_minUpdateTime_summary"
+        android:defaultValue="@string/pref_header_general_minUpdateTime_default"
+        android:inputType="number"
+        android:key="minUpdateTime"
+        android:title="@string/pref_header_general_minUpdateTime_title"
+        android:summary="@string/pref_header_general_minUpdateTime_summary"
             />
 
     <EditTextPreference
@@ -47,6 +14,14 @@
         android:key="minDistance"
         android:title="@string/pref_header_general_minDistance_title"
         android:summary="@string/pref_header_general_minDistance_summary"
+        />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_header_general_warnAccuracyThreshold_default"
+        android:inputType="number"
+        android:key="warnAccuracyThreshold"
+        android:title="@string/pref_header_general_warnAccuracyThreshold_title"
+        android:summary="@string/pref_header_general_warnAccuracyThreshold_summary"
         />
 
     <EditTextPreference

@@ -15,8 +15,15 @@
     <string name="pref_header_general_minDistance_summary">Minimum Distance between GPS updates in meters</string>
     <string name="pref_header_general_minDistance_default">100</string>
 
+
+
+    <string name="pref_header_general_warnAccuracyThreshold_title">Warning Accurace Threshold</string>
+    <string name="pref_header_general_warnAccuracyThreshold_summary">Show reading as warning when accuracy is above this threshold in meters</string>
+    <string name="pref_header_general_warnAccuracyThreshold_default">500</string>
+
+
     <string name="pref_header_general_maxAccuracyThreshold_title">Maximum Accurace Threshold</string>
-    <string name="pref_header_general_maxAccuracyThreshold_summary">Show warning when accuracy is above this threshold in meters</string>
+    <string name="pref_header_general_maxAccuracyThreshold_summary">Show reading as error when accuracy is above this threshold in meters</string>
     <string name="pref_header_general_maxAccuracyThreshold_default">1000</string>
 
 

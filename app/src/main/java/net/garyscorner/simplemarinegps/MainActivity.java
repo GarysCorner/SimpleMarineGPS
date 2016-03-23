@@ -48,9 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
     static String appName;
 
-    private long minUpdateTime = 1000 * 60;  //min between location updates milliseconds
-    private long minDistance = 10;  //minimum distance between updates in meters
-    private int maxAccuracyThreshold;
+    private long minUpdateTime;  //min between location updates milliseconds
+    private long minDistance;  //minimum distance between updates in meters
+    private int warnAccuracyThreshold; //accuracy before warning
+    private int maxAccuracyThreshold;  //maxAccuracy before error
 
     private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
@@ -109,10 +110,11 @@ public class MainActivity extends AppCompatActivity {
 
         minUpdateTime = 1000 * Long.valueOf(preferences.getString("minUpdateTime", getResources().getString(R.string.pref_header_general_minUpdateTime_default)));
         minDistance = Long.valueOf(preferences.getString("minDistance", getResources().getString(R.string.pref_header_general_minDistance_default)));
+        warnAccuracyThreshold = Integer.valueOf( preferences.getString("warnAccuracyThreshold", getResources().getString(R.string.pref_header_general_warnAccuracyThreshold_default)) );
         maxAccuracyThreshold = Integer.valueOf(preferences.getString("maxAccuracyThreshold", getResources().getString(R.string.pref_header_general_maxAccuracyThreshold_default)));
 
         //output preferences
-        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ")");
+        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") warnAccuracyThreshold(" + Integer.toString(warnAccuracyThreshold) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ")");
 
     }
 
@@ -249,9 +251,11 @@ public class MainActivity extends AppCompatActivity {
             text_acc.setText(doubleToAcc(location.getAccuracy()));
 
             //set the color to indicate location accuracy
-            if( maxAccuracyThreshold < location.getAccuracy()) {
+            if (maxAccuracyThreshold < location.getAccuracy()) {
                 setTextViewBad(text_acc);
-            } else {
+            } else if( warnAccuracyThreshold < location.getAccuracy() ) {
+                setTextViewWarn(text_acc);
+            }else {
                 setTextViewGood(text_acc);
             }
 

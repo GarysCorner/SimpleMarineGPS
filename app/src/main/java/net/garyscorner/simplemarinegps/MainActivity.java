@@ -210,6 +210,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //handle location change  returns false if location is null
+    private boolean processLocation(Location location) {
+
+        if(location != null) {
+            Log.d("SimpleMarineGPS", "Location updated" + location.toString());
+
+            text_lat.setText(doubleToLat(location.getLatitude()));
+            text_long.setText(doubleToLong(location.getLongitude()));
+            text_acc.setText(doubleToAcc(location.getAccuracy()));
+
+            lastLocationTime = location.getTime();
+
+            return true;
+
+        } else {
+            Log.d("SimpleMarineGPS", "Location returned NULL, no update required.");
+            return false;
+        }
+    }
+
     //setup locaiton manager and listener
     private void locationsetup() {
 
@@ -218,14 +238,7 @@ public class MainActivity extends AppCompatActivity {
         locationlistener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("SimpleMarineGPS", "Location updated" + location.toString());
-
-                text_lat.setText(doubleToLat(location.getLatitude()));
-                text_long.setText(doubleToLong(location.getLongitude()));
-                text_acc.setText(doubleToAcc(location.getAccuracy()));
-
-                lastLocationTime = location.getTime();
-
+                processLocation(location);
             }
 
             @Override
@@ -314,6 +327,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("SimpleMarineGPS", "Attempting to start location manager");
 
         try{
+
+            //try to get last location print debug info if none found
+            if( !processLocation( (Location) locationmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER) ) ) {
+                Log.d("SimpleMarineGPS", "Could not get lastKnownLocation");
+            }
             locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, minDistance, locationlistener);
 
         } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle

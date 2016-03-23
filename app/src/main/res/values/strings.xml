@@ -1,12 +1,22 @@
 <resources>
     <string name="app_name">Simple Marine GPS</string>
     <string name="action_settings">Settings</string>
+    <string name="app_name_log">SimpleMarineGPS</string> <!-- app name for logging purposes -->
 
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
+    <string name="pref_header_general_minUpdateTime_title">GPS Update Frequency</string>
+    <string name="pref_header_general_minUpdateTime_summary">Minimum time between GPS updates, longer saves battery in minutes</string>
+    <string name="pref_header_general_minUpdateTime_default">1</string>
 
+    <string name="pref_header_general_minDistance_title">Distance Between Updates</string>
+    <string name="pref_header_general_minDistance_summary">Minimum Distance between GPS updates in meters</string>
+    <string name="pref_header_general_minDistance_default">100</string>
+
+
+    <!-- custom strings -->
     <string name="text_latlabel">Latitude:  </string>
     <string name="text_longlabel">Longitutde:  </string>
     <string name="text_acc_label">Accuracy:  </string>

@@ -2,6 +2,7 @@ package net.garyscorner.simplemarinegps;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -9,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -42,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     //declare vars
     private LocationManager locationmanager;
     private LocationListener locationlistener;
+
+
+    static String appName;
     private long minUpdateTime = 1000 * 60;  //min between location updates milliseconds
     private long minDistance = 10;  //minimum distance between updates in meters
     private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
@@ -65,7 +70,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("SimpleMarineGPS", "Creating main activity!");
+        appName = getResources().getString(R.string.app_name_log);
+
+        //get the shared preferences
+        setSharedPrefs();
+
+        Log.d(appName, "Creating main activity!");
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -88,6 +98,20 @@ public class MainActivity extends AppCompatActivity {
         requestLocationPermissions();
 
 
+
+    }
+
+    private void setSharedPrefs() {
+        //get the shared preferences  and set them are variables
+
+        Log.d(appName, "Getting shard preferences");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        minUpdateTime = 1000 * Long.valueOf(preferences.getString("minUpdateTime", getResources().getString(R.string.pref_header_general_minUpdateTime_default)));
+        minDistance = Long.valueOf(preferences.getString("minDistance", getResources().getString(R.string.pref_header_general_minDistance_default)));
+
+        //output preferences
+        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ")");
 
     }
 
@@ -118,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();  //call super first
-        Log.d("SimpleMarineGPS", "Starting main activity");
+        Log.d(appName, "Starting main activity");
 
         //if we have permissions go ahead and start GPS
         if(checkLocationPermission()) {
@@ -157,14 +181,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("SimpleMarineGPS", "Location manager paused");
+        Log.d(appName, "Location manager paused");
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Log.d("SimpleMarineGPS", "Main activity stopped");
+        Log.d(appName, "Main activity stopped");
 
         timer.cancel();
 
@@ -214,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean processLocation(Location location) {
 
         if(location != null) {
-            Log.d("SimpleMarineGPS", "Location updated" + location.toString());
+            Log.d(appName, "Location updated" + location.toString());
 
             text_lat.setText(doubleToLat(location.getLatitude()));
             text_long.setText(doubleToLong(location.getLongitude()));
@@ -225,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
 
         } else {
-            Log.d("SimpleMarineGPS", "Location returned NULL, no update required.");
+            Log.d(appName, "Location returned NULL, no update required.");
             return false;
         }
     }
@@ -243,19 +267,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                Log.d("SimpleMarineGPS", "LocationManager status change");
+                Log.d(appName, "LocationManager status change");
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-                Log.d("SimpleMarineGPS", "LocationManager enabled");
+                Log.d(appName, "LocationManager enabled");
                 text_status.setText("enabled");
                 setTextViewGood(text_status);
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-                Log.d("SimpleMarineGPS", "LocationManager disabled");
+                Log.d(appName, "LocationManager disabled");
                 text_status.setText("disabled");
                 setTextViewBad(text_status);
             }
@@ -309,11 +333,11 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean stopLocationServices() { //stop locaiton services
 
-        Log.d("SimpleMarineGPS", "Attempting to remove locaiton updates");
+        Log.d(appName, "Attempting to remove locaiton updates");
         try{
             locationmanager.removeUpdates(locationlistener);
         } catch (SecurityException e) {
-            Log.w("SimpleMarineGPS", "Removing location update failed!?!");
+            Log.w(appName, "Removing location update failed!?!");
             return false;
         }
 
@@ -324,18 +348,18 @@ public class MainActivity extends AppCompatActivity {
 
     //star location services
     private void startLocationManager() {
-        Log.d("SimpleMarineGPS", "Attempting to start location manager");
+        Log.d(appName, "Attempting to start location manager");
 
         try{
 
             //try to get last location print debug info if none found
             if( !processLocation( (Location) locationmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER) ) ) {
-                Log.d("SimpleMarineGPS", "Could not get lastKnownLocation");
+                Log.d(appName, "Could not get lastKnownLocation");
             }
             locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minUpdateTime, minDistance, locationlistener);
 
         } catch (SecurityException e) {  //We should already havechecked permissions at this point but if something happens handle
-            Log.d("SimpleMarineGPS", "No permissions to start locationmanager unexpectidly");
+            Log.d(appName, "No permissions to start locationmanager unexpectidly");
 
         }
 

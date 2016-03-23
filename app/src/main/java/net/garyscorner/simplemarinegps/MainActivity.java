@@ -248,6 +248,13 @@ public class MainActivity extends AppCompatActivity {
             text_long.setText(doubleToLong(location.getLongitude()));
             text_acc.setText(doubleToAcc(location.getAccuracy()));
 
+            //set the color to indicate location accuracy
+            if( maxAccuracyThreshold < location.getAccuracy()) {
+                setTextViewBad(text_acc);
+            } else {
+                setTextViewGood(text_acc);
+            }
+
             lastLocationTime = location.getTime();
 
             return true;

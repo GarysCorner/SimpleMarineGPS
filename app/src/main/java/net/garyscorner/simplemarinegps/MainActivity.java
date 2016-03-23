@@ -47,8 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     static String appName;
+
     private long minUpdateTime = 1000 * 60;  //min between location updates milliseconds
     private long minDistance = 10;  //minimum distance between updates in meters
+    private int maxAccuracyThreshold;
+
     private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
     long lastLocationTime = 0;
@@ -106,9 +109,10 @@ public class MainActivity extends AppCompatActivity {
 
         minUpdateTime = 1000 * Long.valueOf(preferences.getString("minUpdateTime", getResources().getString(R.string.pref_header_general_minUpdateTime_default)));
         minDistance = Long.valueOf(preferences.getString("minDistance", getResources().getString(R.string.pref_header_general_minDistance_default)));
+        maxAccuracyThreshold = Integer.valueOf(preferences.getString("maxAccuracyThreshold", getResources().getString(R.string.pref_header_general_maxAccuracyThreshold_default)));
 
         //output preferences
-        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ")");
+        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ")");
 
     }
 

@@ -15,6 +15,11 @@
     <string name="pref_header_general_minDistance_summary">Minimum Distance between GPS updates in meters</string>
     <string name="pref_header_general_minDistance_default">100</string>
 
+    <string name="pref_header_general_maxAccuracyThreshold_title">Maximum Accurace Threshold</string>
+    <string name="pref_header_general_maxAccuracyThreshold_summary">Show warning when accuracy is above this threshold in meters</string>
+    <string name="pref_header_general_maxAccuracyThreshold_default">1000</string>
+
+
 
     <!-- custom strings -->
     <string name="text_latlabel">Latitude:  </string>

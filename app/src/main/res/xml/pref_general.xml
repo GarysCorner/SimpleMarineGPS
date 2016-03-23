@@ -49,4 +49,12 @@
         android:summary="@string/pref_header_general_minDistance_summary"
         />
 
+    <EditTextPreference
+        android:defaultValue="@string/pref_header_general_maxAccuracyThreshold_default"
+        android:inputType="number"
+        android:key="maxAccuracyThreshold"
+        android:title="@string/pref_header_general_maxAccuracyThreshold_title"
+        android:summary="@string/pref_header_general_maxAccuracyThreshold_summary"
+        />
+
 </PreferenceScreen>

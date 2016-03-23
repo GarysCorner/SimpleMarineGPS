@@ -72,9 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         appName = getResources().getString(R.string.app_name_log);
 
-        //get the shared preferences
-        setSharedPrefs();
-
         Log.d(appName, "Creating main activity!");
 
         setContentView(R.layout.activity_main);
@@ -142,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();  //call super first
+
+        setSharedPrefs();
+
         Log.d(appName, "Starting main activity");
 
         //if we have permissions go ahead and start GPS

@@ -50,8 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
     private long minUpdateTime;  //min between location updates milliseconds
     private long minDistance;  //minimum distance between updates in meters
+
     private int warnAccuracyThreshold; //accuracy before warning
     private int maxAccuracyThreshold;  //maxAccuracy before error
+
+    private long warnTimeThreshold;  //Mark time is warning after this
+    private long maxTimeThreshold;  //Mark time as error after this
 
     private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
@@ -110,11 +114,16 @@ public class MainActivity extends AppCompatActivity {
 
         minUpdateTime = 1000 * Long.valueOf(preferences.getString("minUpdateTime", getResources().getString(R.string.pref_header_general_minUpdateTime_default)));
         minDistance = Long.valueOf(preferences.getString("minDistance", getResources().getString(R.string.pref_header_general_minDistance_default)));
+
         warnAccuracyThreshold = Integer.valueOf( preferences.getString("warnAccuracyThreshold", getResources().getString(R.string.pref_header_general_warnAccuracyThreshold_default)) );
         maxAccuracyThreshold = Integer.valueOf(preferences.getString("maxAccuracyThreshold", getResources().getString(R.string.pref_header_general_maxAccuracyThreshold_default)));
 
+        warnTimeThreshold = Long.valueOf( preferences.getString("warnTimeThreshold", getResources().getString(R.string.pref_header_general_warnTimeThreshold_default))  ) * 60;
+        maxTimeThreshold = Long.valueOf( preferences.getString( "maxTimeThreshold", getResources().getString(R.string.pref_header_general_maxTimeThreshold_default) ) ) * 60;
+
+
         //output preferences
-        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") warnAccuracyThreshold(" + Integer.toString(warnAccuracyThreshold) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ")");
+        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") warnAccuracyThreshold(" + Integer.toString(warnAccuracyThreshold) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ") warnTimeThreshold(" + Long.toString(warnTimeThreshold) + ") maxTimeThreshold(" + Long.toString(maxTimeThreshold) + ")");
 
     }
 
@@ -167,7 +176,17 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     text_last.setText(Long.toString(timeDiff/60) + " mins");
                 }
+
+                if(maxTimeThreshold < timeDiff ) {
+                    setTextViewBad(text_last);
+                } else if( warnTimeThreshold < timeDiff ) {
+                    setTextViewWarn(text_last);
+                } else {
+                    setTextViewGood(text_last);
+                }
+
             }
+
         };
 
         //start the timer to update last time
@@ -341,10 +360,6 @@ public class MainActivity extends AppCompatActivity {
         return Double.toString(acc)+"m";
     }
 
-    private String longToTime(long timestamp) {
-        return "Still working on it";
-
-    }
 
     private boolean stopLocationServices() { //stop locaiton services
 

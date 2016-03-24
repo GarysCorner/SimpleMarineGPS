@@ -16,6 +16,7 @@
         android:summary="@string/pref_header_general_minDistance_summary"
         />
 
+
     <EditTextPreference
         android:defaultValue="@string/pref_header_general_warnAccuracyThreshold_default"
         android:inputType="number"
@@ -30,6 +31,22 @@
         android:key="maxAccuracyThreshold"
         android:title="@string/pref_header_general_maxAccuracyThreshold_title"
         android:summary="@string/pref_header_general_maxAccuracyThreshold_summary"
+        />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_header_general_warnTimeThreshold_default"
+        android:inputType="number"
+        android:key="warnTimeThreshold"
+        android:title="@string/pref_header_general_warnTimeThreshold_title"
+        android:summary="@string/pref_header_general_warnTimeThreshold_summary"
+        />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_header_general_maxTimeThreshold_default"
+        android:inputType="number"
+        android:key="maxTimeThreshold"
+        android:title="@string/pref_header_general_maxTimeThreshold_title"
+        android:summary="@string/pref_header_general_maxTimeThreshold_summary"
         />
 
 </PreferenceScreen>

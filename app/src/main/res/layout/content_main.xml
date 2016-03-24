@@ -32,16 +32,17 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_latlabel"
                 android:id="@+id/text_latlabel"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_lat"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                />
 
         </LinearLayout>
 
@@ -56,16 +57,18 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_longlabel"
                 android:id="@+id/text_longlabel"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_long"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                />
+
         </LinearLayout>
 
         <LinearLayout
@@ -79,16 +82,17 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_acc_label"
                 android:id="@+id/text_acclabel"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_acc"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:textColor="#ffffff" />
+                android:textColor="#000000"
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -102,16 +106,17 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_lastlabel"
                 android:id="@+id/text_lastlabel"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_last"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:textColor="#ffffff" />
+                android:textColor="#000000"
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -125,17 +130,18 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_statuslabel"
                 android:id="@+id/text_statuslabel"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_status"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:text="disabled"
-                android:textColor="#ffffff" />
+                android:textColor="#000000"
+                android:paddingLeft="10dp" />
+            <!--  android:text="disabled"  -->
         </LinearLayout>
 
     </LinearLayout>

@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    //restreive shared prefferences
     private void setSharedPrefs() {
         //get the shared preferences  and set them are variables
 
@@ -171,7 +173,9 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 long timeDiff = (System.currentTimeMillis() - lastLocationTime) / 1000;
 
-                if(timeDiff < 60) {
+                if(timeDiff < 5 ) {
+                  text_last.setText("Now");
+                } else if(timeDiff < 60) {
                     text_last.setText(Long.toString(timeDiff) + " secs");
                 } else {
                     text_last.setText(Long.toString(timeDiff/60) + " mins");
@@ -189,13 +193,20 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
+        updateLastGPSRunable.run();  //run as soon as we open
+
         //start the timer to update last time
         timer = new Timer();
 
         timertask = new TimerTask() {
             @Override
             public void run() {
-                updateLastGPS();
+
+                if( lastLocationTime > 0 ) { //only perform if we have received a location
+
+                    runOnUiThread(updateLastGPSRunable);
+
+                }
             }
         };
 
@@ -265,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         if(location != null) {
             Log.d(appName, "Location updated" + location.toString());
 
+
             text_lat.setText(doubleToLat(location.getLatitude()));
             text_long.setText(doubleToLong(location.getLongitude()));
             text_acc.setText(doubleToAcc(location.getAccuracy()));
@@ -279,6 +291,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             lastLocationTime = location.getTime();
+
+            //set last update time
+            setTextViewGood(text_last);
+            text_last.setText("Now");
 
             return true;
 
@@ -364,13 +380,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean stopLocationServices() { //stop locaiton services
 
         Log.d(appName, "Attempting to remove locaiton updates");
-        try{
+        try {
             locationmanager.removeUpdates(locationlistener);
         } catch (SecurityException e) {
             Log.w(appName, "Removing location update failed!?!");
             return false;
         }
-
 
 
         return true;
@@ -415,14 +430,7 @@ public class MainActivity extends AppCompatActivity {
         textview.setBackgroundColor(Color.RED);
     }
 
-    private void updateLastGPS() {
 
-        if( lastLocationTime > 0 ) { //only perform if we have received a location
-
-            runOnUiThread(updateLastGPSRunable);
-
-        }
-    }
 
 }
 

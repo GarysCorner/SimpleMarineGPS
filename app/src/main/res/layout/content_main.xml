@@ -139,8 +139,10 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_status"
                 android:gravity="right"
-                android:textColor="#000000"
-                android:paddingLeft="10dp" />
+                android:paddingLeft="10dp"
+                android:text="disable"
+                android:background="#ff0000"
+                android:textColor="#000000" />
             <!--  android:text="disabled"  -->
         </LinearLayout>
 

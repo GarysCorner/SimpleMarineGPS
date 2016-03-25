@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     //widgets
     TextView text_lat, text_long, text_acc, text_last, text_status;
+    MenuItem action_requestPermissions;
 
     //code
     @Override
@@ -133,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        //set actionbar menu widgets to variables
+        action_requestPermissions = (MenuItem) menu.findItem(R.id.action_requestPermissions);
+
+
         return true;
     }
 
@@ -148,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
             Intent settingsintent = new Intent(this, Settings.class);
             startActivity(settingsintent);
             return true;
+        } else if(id == R.id.action_requestPermissions) {
+            requestLocationPermissions();
         }
 
         return super.onOptionsItemSelected(item);
@@ -160,11 +167,6 @@ public class MainActivity extends AppCompatActivity {
         setSharedPrefs();
 
         Log.d(appName, "Starting main activity");
-
-        //if we have permissions go ahead and start GPS
-        if(checkLocationPermission()) {
-            startLocationManager();
-        }
 
 
         //setup runable object for timertask so we dont create it every time
@@ -212,6 +214,11 @@ public class MainActivity extends AppCompatActivity {
 
         timer.schedule(timertask, 0, updateLastGPSperiod);
 
+        //if we have permissions go ahead and start GPS
+        if(checkLocationPermission()) {
+            startLocationManager();
+        }
+
     }
 
     @Override
@@ -238,9 +245,14 @@ public class MainActivity extends AppCompatActivity {
 
             case requestGPScode: {
 
+                    //start the location manager if not enabled, also change the status pf action_requestPermission to be visable or invisable depending
                     if(grantResults.length >0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        action_requestPermissions.setVisible(false);
                         startLocationManager();
+                    } else {
+                        action_requestPermissions.setVisible(true);
                     }
+
                     return;
             }
 
@@ -254,7 +266,11 @@ public class MainActivity extends AppCompatActivity {
 
     //check for location manager permissions
     public boolean checkLocationPermission() {
-        return(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION));
+
+        boolean permissions = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+
+        return permissions;
     }
 
 

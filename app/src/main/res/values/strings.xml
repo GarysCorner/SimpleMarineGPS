@@ -1,15 +1,18 @@
 <resources>
     <string name="app_name">Simple Marine GPS</string>
-    <string name="action_settings">Settings</string>
     <string name="app_name_log">SimpleMarineGPS</string> <!-- app name for logging purposes -->
 
-    <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
+    <!-- action bar strings -->
+    <string name="action_requestPermissions">Request GPS Permissions</string>
+    <string name="action_settings">Settings</string>
+
+
+    <!-- Strings related to Settings -->
     <string name="pref_header_general">General</string>
     <string name="pref_header_general_minUpdateTime_title">GPS Update Frequency</string>
     <string name="pref_header_general_minUpdateTime_summary">Minimum time between GPS updates, longer saves battery in minutes</string>
-    <string name="pref_header_general_minUpdateTime_default">1</string>
+    <string name="pref_header_general_minUpdateTime_default">2</string>
 
     <string name="pref_header_general_minDistance_title">Distance Between Updates</string>
     <string name="pref_header_general_minDistance_summary">Minimum Distance between GPS updates in meters</string>
@@ -19,12 +22,20 @@
 
     <string name="pref_header_general_warnAccuracyThreshold_title">Warning Accurace Threshold</string>
     <string name="pref_header_general_warnAccuracyThreshold_summary">Show reading as warning when accuracy is above this threshold in meters</string>
-    <string name="pref_header_general_warnAccuracyThreshold_default">500</string>
+    <string name="pref_header_general_warnAccuracyThreshold_default">250</string>
 
 
     <string name="pref_header_general_maxAccuracyThreshold_title">Maximum Accurace Threshold</string>
     <string name="pref_header_general_maxAccuracyThreshold_summary">Show reading as error when accuracy is above this threshold in meters</string>
     <string name="pref_header_general_maxAccuracyThreshold_default">1000</string>
+
+    <string name="pref_header_general_warnTimeThreshold_title">Warning Time Threshold</string>
+    <string name="pref_header_general_warnTimeThreshold_summary">Show last update time as warning after this time, in minutes</string>
+    <string name="pref_header_general_warnTimeThreshold_default">5</string>
+
+    <string name="pref_header_general_maxTimeThreshold_title">Maximum Time Threshold</string>
+    <string name="pref_header_general_maxTimeThreshold_summary">Show last update time as error after this time, in minutes</string>
+    <string name="pref_header_general_maxTimeThreshold_default">20</string>
 
 
 

@@ -18,7 +18,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        >
 
         <LinearLayout
             android:orientation="horizontal"
@@ -30,15 +31,18 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_latlabel"
-                android:id="@+id/text_latlabel" />
+                android:id="@+id/text_latlabel"
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_lat"
-                android:layout_weight="1"
-                android:gravity="right" />
+                android:gravity="right"
+                android:textColor="#ffffff"
+                />
 
         </LinearLayout>
 
@@ -52,15 +56,19 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_longlabel"
-                android:id="@+id/text_longlabel" />
+                android:id="@+id/text_longlabel"
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_long"
-                android:layout_weight="1"
-                android:gravity="right" />
+                android:gravity="right"
+                android:textColor="#ffffff"
+                />
+
         </LinearLayout>
 
         <LinearLayout
@@ -73,15 +81,18 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_acc_label"
-                android:id="@+id/text_acclabel" />
+                android:id="@+id/text_acclabel"
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_acc"
-                android:layout_weight="1"
-                android:gravity="right" />
+                android:gravity="right"
+                android:textColor="#000000"
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -94,15 +105,18 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_lastlabel"
-                android:id="@+id/text_lastlabel" />
+                android:id="@+id/text_lastlabel"
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_last"
-                android:layout_weight="1"
-                android:gravity="right" />
+                android:gravity="right"
+                android:textColor="#000000"
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -115,16 +129,21 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/text_statuslabel"
-                android:id="@+id/text_statuslabel" />
+                android:id="@+id/text_statuslabel"
+                android:textColor="#ffffff"
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/text_status"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:text="disabled" />
+                android:paddingLeft="10dp"
+                android:text="disable"
+                android:background="#ff0000"
+                android:textColor="#000000" />
+            <!--  android:text="disabled"  -->
         </LinearLayout>
 
     </LinearLayout>

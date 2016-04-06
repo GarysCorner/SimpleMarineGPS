@@ -50,8 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
     private long minUpdateTime;  //min between location updates milliseconds
     private long minDistance;  //minimum distance between updates in meters
+
     private int warnAccuracyThreshold; //accuracy before warning
     private int maxAccuracyThreshold;  //maxAccuracy before error
+
+    private long warnTimeThreshold;  //Mark time is warning after this
+    private long maxTimeThreshold;  //Mark time as error after this
 
     private final int requestGPScode = 1;  //return code for GPS permissions gran/deny
 
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     //widgets
     TextView text_lat, text_long, text_acc, text_last, text_status;
+    MenuItem action_requestPermissions;
 
     //code
     @Override
@@ -102,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    //restreive shared prefferences
     private void setSharedPrefs() {
         //get the shared preferences  and set them are variables
 
@@ -110,11 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
         minUpdateTime = 1000 * Long.valueOf(preferences.getString("minUpdateTime", getResources().getString(R.string.pref_header_general_minUpdateTime_default)));
         minDistance = Long.valueOf(preferences.getString("minDistance", getResources().getString(R.string.pref_header_general_minDistance_default)));
+
         warnAccuracyThreshold = Integer.valueOf( preferences.getString("warnAccuracyThreshold", getResources().getString(R.string.pref_header_general_warnAccuracyThreshold_default)) );
         maxAccuracyThreshold = Integer.valueOf(preferences.getString("maxAccuracyThreshold", getResources().getString(R.string.pref_header_general_maxAccuracyThreshold_default)));
 
+        warnTimeThreshold = Long.valueOf( preferences.getString("warnTimeThreshold", getResources().getString(R.string.pref_header_general_warnTimeThreshold_default))  ) * 60;
+        maxTimeThreshold = Long.valueOf( preferences.getString( "maxTimeThreshold", getResources().getString(R.string.pref_header_general_maxTimeThreshold_default) ) ) * 60;
+
+
         //output preferences
-        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") warnAccuracyThreshold(" + Integer.toString(warnAccuracyThreshold) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ")");
+        Log.d(appName, "Preferences: minUpdateTime(" + Long.toString(minUpdateTime) + ") minDistance(" + Long.toString(minDistance) + ") warnAccuracyThreshold(" + Integer.toString(warnAccuracyThreshold) + ") maxAccuracyThreshold(" + Integer.toString(maxAccuracyThreshold) + ") warnTimeThreshold(" + Long.toString(warnTimeThreshold) + ") maxTimeThreshold(" + Long.toString(maxTimeThreshold) + ")");
 
     }
 
@@ -122,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        //set actionbar menu widgets to variables
+        action_requestPermissions = (MenuItem) menu.findItem(R.id.action_requestPermissions);
+
+
         return true;
     }
 
@@ -137,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
             Intent settingsintent = new Intent(this, Settings.class);
             startActivity(settingsintent);
             return true;
+        } else if(id == R.id.action_requestPermissions) {
+            requestLocationPermissions();
         }
 
         return super.onOptionsItemSelected(item);
@@ -150,11 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(appName, "Starting main activity");
 
-        //if we have permissions go ahead and start GPS
-        if(checkLocationPermission()) {
-            startLocationManager();
-        }
-
 
         //setup runable object for timertask so we dont create it every time
         updateLastGPSRunable = new Runnable() {
@@ -162,13 +175,27 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 long timeDiff = (System.currentTimeMillis() - lastLocationTime) / 1000;
 
-                if(timeDiff < 60) {
+                if(timeDiff < 5 ) {
+                  text_last.setText("Now");
+                } else if(timeDiff < 60) {
                     text_last.setText(Long.toString(timeDiff) + " secs");
                 } else {
                     text_last.setText(Long.toString(timeDiff/60) + " mins");
                 }
+
+                if(maxTimeThreshold < timeDiff ) {
+                    setTextViewBad(text_last);
+                } else if( warnTimeThreshold < timeDiff ) {
+                    setTextViewWarn(text_last);
+                } else {
+                    setTextViewGood(text_last);
+                }
+
             }
+
         };
+
+        updateLastGPSRunable.run();  //run as soon as we open
 
         //start the timer to update last time
         timer = new Timer();
@@ -176,11 +203,21 @@ public class MainActivity extends AppCompatActivity {
         timertask = new TimerTask() {
             @Override
             public void run() {
-                updateLastGPS();
+
+                if( lastLocationTime > 0 ) { //only perform if we have received a location
+
+                    runOnUiThread(updateLastGPSRunable);
+
+                }
             }
         };
 
         timer.schedule(timertask, 0, updateLastGPSperiod);
+
+        //if we have permissions go ahead and start GPS
+        if(checkLocationPermission()) {
+            startLocationManager();
+        }
 
     }
 
@@ -208,9 +245,14 @@ public class MainActivity extends AppCompatActivity {
 
             case requestGPScode: {
 
+                    //start the location manager if not enabled, also change the status pf action_requestPermission to be visable or invisable depending
                     if(grantResults.length >0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        action_requestPermissions.setVisible(false);
                         startLocationManager();
+                    } else {
+                        action_requestPermissions.setVisible(true);
                     }
+
                     return;
             }
 
@@ -224,7 +266,11 @@ public class MainActivity extends AppCompatActivity {
 
     //check for location manager permissions
     public boolean checkLocationPermission() {
-        return(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION));
+
+        boolean permissions = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+
+        return permissions;
     }
 
 
@@ -246,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
         if(location != null) {
             Log.d(appName, "Location updated" + location.toString());
 
+
             text_lat.setText(doubleToLat(location.getLatitude()));
             text_long.setText(doubleToLong(location.getLongitude()));
             text_acc.setText(doubleToAcc(location.getAccuracy()));
@@ -260,6 +307,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             lastLocationTime = location.getTime();
+
+            //set last update time
+            setTextViewGood(text_last);
+            text_last.setText("Now");
 
             return true;
 
@@ -341,21 +392,16 @@ public class MainActivity extends AppCompatActivity {
         return Double.toString(acc)+"m";
     }
 
-    private String longToTime(long timestamp) {
-        return "Still working on it";
-
-    }
 
     private boolean stopLocationServices() { //stop locaiton services
 
         Log.d(appName, "Attempting to remove locaiton updates");
-        try{
+        try {
             locationmanager.removeUpdates(locationlistener);
         } catch (SecurityException e) {
             Log.w(appName, "Removing location update failed!?!");
             return false;
         }
-
 
 
         return true;
@@ -400,14 +446,7 @@ public class MainActivity extends AppCompatActivity {
         textview.setBackgroundColor(Color.RED);
     }
 
-    private void updateLastGPS() {
 
-        if( lastLocationTime > 0 ) { //only perform if we have received a location
-
-            runOnUiThread(updateLastGPSRunable);
-
-        }
-    }
 
 }
 

@@ -41,7 +41,7 @@
 
     <!-- custom strings -->
     <string name="text_latlabel">Latitude:  </string>
-    <string name="text_longlabel">Longitutde:  </string>
+    <string name="text_longlabel">Longitude:  </string>
     <string name="text_acc_label">Accuracy:  </string>
     <string name="text_lastlabel">Last Update:</string>
     <string name="text_statuslabel">GPS Status:</string>
